@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hook & Script Generator</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 500px; width: 100%; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        h1 { font-size: 24px; text-align: center; color: #38bdf8; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #cbd5e1; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #334155; border-radius: 8px; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: #0284c7; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #0369a1; }
+        .result-box { margin-top: 25px; padding: 15px; background: #0f172a; border-left: 4px solid #38bdf8; border-radius: 4px; display: none; white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>AI Video Script Generator</h1>
+    <p class="subtitle">TikTok, Reels ve Shorts için viral senaryolar üretin.</p>
+    
+    <label for="topic">Videonuzun Konusu Nedir?</label>
+    <input type="text" id="topic" placeholder="Örn: Kripto paraya yeni başlayanlar için 3 tüyo...">
+
+    <label for="language">Uygulama Dili (Hedef Pazar)</label>
+    <select id="language">
+        <option value="English">English (Önerilen - Yüksek Kazanç)</option>
+        <option value="Turkish">Türkçe</option>
+        <option value="Spanish">Español</option>
+        <option value="German">Deutsch</option>
+    </select>
+
+    <button onclick="generateScript()">Senaryo Üret (Günlük Hak: 1/1)</button>
+
+    <div id="result" class="result-box"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
