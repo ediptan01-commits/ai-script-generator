@@ -71,7 +71,6 @@ Doğrudan kullanılabilecek kaliteli bir içerik üret.
                     ],
                     generationConfig: {
                         maxOutputTokens: 1200,
-                        temperature: 0.8
                     }
                 })
             }
