@@ -1,5 +1,5 @@
 async function generateScript() {
-    // Anahtarı ve diğer bilgileri ekrandaki kutulardan alıyoruz
+    // Bilgileri ekrandaki kutulardan alıyoruz
     const GEMINI_API_KEY = document.getElementById('apiKey').value;
     const topic = document.getElementById('topic').value;
     const language = document.getElementById('language').value;
@@ -47,7 +47,7 @@ async function generateScript() {
 
         const data = await response.json();
         
-        // KESİN ÇÖZÜM: Gemini'den gelen veriyi hatasız okuyan doğru JavaScript yapısı budur:
+        // KESİN ÇÖZÜM: Gemini API listeler halinde veri döndüğü için [0] indekslerini ekledik.
         const aiResult = data.candidates[0].content.parts[0].text;
         
         resultBox.innerText = aiResult;
