@@ -1,8 +1,14 @@
 async function generateScript() {
-    const GEMINI_API_KEY = document.getElementById('apiKey').value.trim();
+    const apiKeyInput = document.getElementById('apiKey');
+    const GEMINI_API_KEY = apiKeyInput.value.trim();
     const topic = document.getElementById('topic').value.trim();
     const language = document.getElementById('language').value;
     const resultBox = document.getElementById('result');
+
+    // API anahtarını bu cihazdaki tarayıcıda hatırla
+    if (GEMINI_API_KEY) {
+        localStorage.setItem('gemini_api_key', GEMINI_API_KEY);
+    }
 
     if (!GEMINI_API_KEY) {
         alert("Lütfen önce Gemini API anahtarınızı girin!");
@@ -70,7 +76,7 @@ Doğrudan kullanılabilecek kaliteli bir içerik üret.
                         }
                     ],
                     generationConfig: {
-                        maxOutputTokens: 1200,
+                        maxOutputTokens: 1200
                     }
                 })
             }
@@ -113,3 +119,13 @@ Doğrudan kullanılabilecek kaliteli bir içerik üret.
             "İnternet bağlantınızı kontrol edip tekrar deneyin.";
     }
 }
+
+
+// Daha önce kaydedilmiş API anahtarını otomatik doldur
+window.addEventListener('DOMContentLoaded', () => {
+    const savedKey = localStorage.getItem('gemini_api_key');
+
+    if (savedKey) {
+        document.getElementById('apiKey').value = savedKey;
+    }
+});
