@@ -17,29 +17,35 @@ async function generateScript() {
     resultBox.style.display = "block";
     resultBox.innerText = "Yapay zeka senaryoyu hazırlıyor...";
 
-    const promptText = `Sen viral TikTok, Instagram Reels ve YouTube Shorts içerik üreticisisin.
+    const promptText = `
+Sen profesyonel bir TikTok, Instagram Reels ve YouTube Shorts senaristisin.
 
-Şu konu hakkında ${language} dilinde, yaklaşık 30 saniyelik etkili bir video içeriği üret:
+Konu:
+${topic}
 
-"${topic}"
+Hedef dil:
+${language}
 
-Çıktı formatı tam olarak şu şekilde olsun:
+Yaklaşık 30 saniyelik, dikkat çekici ve viral olabilecek bir video senaryosu hazırla.
 
-🔥 VİRAL KANCALAR (İlk 3 Saniye İçin 3 Alternatif):
-1- [Kanca 1]
-2- [Kanca 2]
-3- [Kanca 3]
+Çıktıyı şu formatta ver:
 
-🎬 30 SANİYELİK VİDEO SENARYOSU:
-[Akıcı, dinamik ve izleyiciyi videonun sonuna kadar tutacak senaryo]
+🔥 VİRAL KANCALAR
+1. İlk kanca
+2. İkinci kanca
+3. Üçüncü kanca
 
-📱 EKRAN YAZILARI:
-[Video sırasında gösterilecek kısa metinler]
+🎬 30 SANİYELİK VİDEO SENARYOSU
+Akıcı ve izleyiciyi videonun sonuna kadar tutacak senaryoyu yaz.
 
-🎯 ÇAĞRI:
-[İzleyiciyi harekete geçirecek kısa çağrı]
+📱 EKRAN YAZILARI
+Videoda gösterilecek kısa yazıları yaz.
 
-Gereksiz açıklama yapma. Doğrudan kullanılabilecek kaliteli bir senaryo üret.`;
+🎯 ÇAĞRI
+İzleyiciyi harekete geçirecek kısa bir çağrı yaz.
+
+Gereksiz açıklama yapma. Doğrudan kullanılabilecek kaliteli bir içerik üret.
+`;
 
     try {
         const response = await fetch("https://api.openai.com/v1/responses", {
@@ -47,11 +53,11 @@ Gereksiz açıklama yapma. Doğrudan kullanılabilecek kaliteli bir senaryo üre
 
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${OPENAI_API_KEY}`
+                "Authorization": "Bearer " + OPENAI_API_KEY
             },
 
             body: JSON.stringify({
-                model: "gpt-5.6-luna",
+                model: "gpt-5-mini",
                 input: promptText,
                 max_output_tokens: 1200
             })
@@ -59,32 +65,33 @@ Gereksiz açıklama yapma. Doğrudan kullanılabilecek kaliteli bir senaryo üre
 
         const data = await response.json();
 
+        console.log("OpenAI cevabı:", data);
+
         if (!response.ok) {
-            console.error("OpenAI API hatası:", data);
-
-            const message =
+            const errorMessage =
                 data?.error?.message ||
-                `OpenAI API hatası (HTTP ${response.status})`;
+                "OpenAI API isteği başarısız oldu.";
 
-            resultBox.innerText = "Hata: " + message;
-            return;
-        }
-
-        const aiResult = data.output_text;
-
-        if (!aiResult) {
-            console.error("Beklenmeyen OpenAI cevabı:", data);
             resultBox.innerText =
-                "OpenAI'dan geçerli bir metin cevabı alınamadı.";
+                "❌ OpenAI Hatası:\n\n" + errorMessage;
+
             return;
         }
 
-        resultBox.innerText = aiResult;
+        if (!data.output_text) {
+            resultBox.innerText =
+                "❌ OpenAI'dan metin cevabı alınamadı.";
+
+            return;
+        }
+
+        resultBox.innerText = data.output_text;
 
     } catch (error) {
         console.error("Bağlantı hatası:", error);
 
         resultBox.innerText =
-            "Bağlantı hatası oluştu. İnternet bağlantınızı kontrol edin ve tekrar deneyin.";
+            "❌ Bağlantı hatası oluştu.\n\n" +
+            "İnternet bağlantınızı kontrol edip tekrar deneyin.";
     }
 }
