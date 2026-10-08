@@ -47,7 +47,7 @@ async function generateScript() {
 
         const data = await response.json();
         
-        // KESİN ÇÖZÜM: Gemini API listeler halinde veri döndüğü için [0] indekslerini ekledik.
+        // TAM ÇÖZÜM: Gemini API'den gelen metni okuyan kusursuz JavaScript dizilimi:
         const aiResult = data.candidates[0].content.parts[0].text;
         
         resultBox.innerText = aiResult;
