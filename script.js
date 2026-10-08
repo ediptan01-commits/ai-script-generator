@@ -1,10 +1,14 @@
-// Google AI Studio'dan kopyaladığın anahtarı buraya yapıştır
-const GEMINI_API_KEY = 
-
 async function generateScript() {
+    // Anahtarı artık koddan değil, ekrandaki kutudan güvenli bir şekilde alıyoruz
+    const GEMINI_API_KEY = document.getElementById('apiKey').value;
     const topic = document.getElementById('topic').value;
     const language = document.getElementById('language').value;
     const resultBox = document.getElementById('result');
+
+    if (!GEMINI_API_KEY) {
+        alert("Lütfen önce Gemini API anahtarınızı girin!");
+        return;
+    }
 
     if (!topic) {
         alert("Lütfen bir konu başlığı girin!");
@@ -43,13 +47,13 @@ async function generateScript() {
 
         const data = await response.json();
         
-        // Hata düzelten satır: Gemini'nin tam metin çıktısına bu şekilde ulaşıyoruz
+        // Gemini'den gelen metni alıyoruz
         const aiResult = data.candidates[0].content.parts[0].text;
         
         resultBox.innerText = aiResult;
 
     } catch (error) {
         console.error("Hata oluştu:", error);
-        resultBox.innerText = "Bir hata oluştu. Lütfen Gemini API anahtarınızı kontrol edin.";
+        resultBox.innerText = "Bir hata oluştu. Lütfen API anahtarınızın doğruluğunu veya internet bağlantınızı kontrol edin.";
     }
 }
