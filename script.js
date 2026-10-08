@@ -1,5 +1,5 @@
-// ÖNEMLİ NOT: Test için kendi OpenAI API anahtarınızı buraya yazabilirsiniz.
-const OPENAI_API_KEY = "BURAYA_OPENAI_API_KEY_GELECEK"; 
+// Google AI Studio'dan kopyaladığın anahtarı buraya yapıştır
+const GEMINI_API_KEY = 
 
 async function generateScript() {
     const topic = document.getElementById('topic').value;
@@ -26,29 +26,30 @@ async function generateScript() {
     🎬 30 SANİYELİK VİDEO SENARYOSU:
     [Buraya akıcı, dinamik ve izleyiciyi tutacak bir video senaryosu yaz]`;
 
+    const url = `https://googleapis.com{GEMINI_API_KEY}`;
+
     try {
-        const response = await fetch("https://openai.com", {
+        const response = await fetch(url, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${OPENAI_API_KEY}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "gpt-4o-mini", 
-                messages: [{ role: "user", content: promptText }],
-                temperature: 0.7
+                contents: [{
+                    parts: [{ text: promptText }]
+                }]
             })
         });
 
         const data = await response.json();
         
-        // Düzeltilen kısım: API'den gelen metni doğru almak için [0] indeksini kullanıyoruz
-        const aiResult = data.choices[0].message.content;
+        // Hata düzelten satır: Gemini'nin tam metin çıktısına bu şekilde ulaşıyoruz
+        const aiResult = data.candidates[0].content.parts[0].text;
         
         resultBox.innerText = aiResult;
 
     } catch (error) {
         console.error("Hata oluştu:", error);
-        resultBox.innerText = "Bir hata oluştu. Lütfen API anahtarınızı kontrol edin.";
+        resultBox.innerText = "Bir hata oluştu. Lütfen Gemini API anahtarınızı kontrol edin.";
     }
 }
