@@ -1,11 +1,11 @@
 async function generateScript() {
-    const OPENAI_API_KEY = document.getElementById('apiKey').value.trim();
+    const GEMINI_API_KEY = document.getElementById('apiKey').value.trim();
     const topic = document.getElementById('topic').value.trim();
     const language = document.getElementById('language').value;
     const resultBox = document.getElementById('result');
 
-    if (!OPENAI_API_KEY) {
-        alert("Lütfen önce OpenAI API anahtarınızı girin!");
+    if (!GEMINI_API_KEY) {
+        alert("Lütfen önce Gemini API anahtarınızı girin!");
         return;
     }
 
@@ -44,48 +44,67 @@ Videoda gösterilecek kısa yazıları yaz.
 🎯 ÇAĞRI
 İzleyiciyi harekete geçirecek kısa bir çağrı yaz.
 
-Gereksiz açıklama yapma. Doğrudan kullanılabilecek kaliteli bir içerik üret.
+Gereksiz açıklama yapma.
+Doğrudan kullanılabilecek kaliteli bir içerik üret.
 `;
 
     try {
-        const response = await fetch("https://api.openai.com/v1/responses", {
-            method: "POST",
+        const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+            {
+                method: "POST",
 
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + OPENAI_API_KEY
-            },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": GEMINI_API_KEY
+                },
 
-            body: JSON.stringify({
-                model: "gpt-5-mini",
-                input: promptText,
-                max_output_tokens: 1200
-            })
-        });
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                {
+                                    text: promptText
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        maxOutputTokens: 1200,
+                        temperature: 0.8
+                    }
+                })
+            }
+        );
 
         const data = await response.json();
 
-        console.log("OpenAI cevabı:", data);
+        console.log("Gemini cevabı:", data);
 
         if (!response.ok) {
             const errorMessage =
                 data?.error?.message ||
-                "OpenAI API isteği başarısız oldu.";
+                `Gemini API hatası (HTTP ${response.status})`;
 
             resultBox.innerText =
-                "❌ OpenAI Hatası:\n\n" + errorMessage;
+                "❌ Gemini Hatası:\n\n" + errorMessage;
 
             return;
         }
 
-        if (!data.output_text) {
+        const aiResult =
+            data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!aiResult) {
+            console.error("Beklenmeyen Gemini cevabı:", data);
+
             resultBox.innerText =
-                "❌ OpenAI'dan metin cevabı alınamadı.";
+                "❌ Gemini'dan geçerli bir metin cevabı alınamadı.";
 
             return;
         }
 
-        resultBox.innerText = data.output_text;
+        resultBox.innerText = aiResult;
 
     } catch (error) {
         console.error("Bağlantı hatası:", error);
