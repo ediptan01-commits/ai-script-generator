@@ -50,7 +50,7 @@ Generate native audio and suitable sound effects.
 `;
 
         const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/veo-3.1-generate-preview:predictLongRunning",
+            "https://generativelanguage.googleapis.com/v1beta/models/veo-3.1-lite-generate-preview:predictLongRunning",
             {
                 method: "POST",
 
