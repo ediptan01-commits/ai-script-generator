@@ -69,7 +69,6 @@ Generate native audio and suitable sound effects.
                     parameters: {
                         aspectRatio: "9:16",
                         durationSeconds: 8,
-                        numberOfVideos: 1
                     }
                 })
             }
