@@ -1,472 +1,224 @@
+/* =====================================
+   SENARYO OLUŞTURMA
+===================================== */
+
 async function generateScript() {
+    const apiKey = document.getElementById("apiKey").value.trim();
+    const topic = document.getElementById("topic").value.trim();
+    const language = document.getElementById("language").value;
+    const resultBox = document.getElementById("result");
 
-    const apiKeyInput = document.getElementById('apiKey');
-
-    const GEMINI_API_KEY =
-        apiKeyInput.value.trim();
-
-    const topic =
-        document.getElementById('topic').value.trim();
-
-    const language =
-        document.getElementById('language').value;
-
-    const resultBox =
-        document.getElementById('result');
-
-
-    if (GEMINI_API_KEY) {
-
-        localStorage.setItem(
-            'gemini_api_key',
-            GEMINI_API_KEY
-        );
-
-    }
-
-
-    if (!GEMINI_API_KEY) {
-
-        alert(
-            "Lütfen önce Gemini API anahtarınızı girin!"
-        );
-
+    if (!apiKey || !topic) {
+        alert("Gemini API anahtarını ve konuyu gir.");
         return;
     }
 
-
-    if (!topic) {
-
-        alert(
-            "Lütfen bir konu başlığı girin!"
-        );
-
-        return;
-    }
-
-
+    localStorage.setItem("gemini_api_key", apiKey);
     resultBox.style.display = "block";
+    resultBox.innerText = "Senaryo hazırlanıyor...";
 
-    resultBox.innerText =
-        "🧠 Yapay zeka senaryoyu hazırlıyor...";
+    const prompt = `
+Sen profesyonel bir kısa video senaristisin.
+KONU: ${topic}
+DİL: ${language}
 
-
-    const promptText = `
-
-Sen profesyonel bir TikTok, Instagram Reels ve YouTube Shorts senaristisin.
-
-KONU:
-${topic}
-
-HEDEF DİL:
-${language}
-
-Yaklaşık 30 saniyelik, dikkat çekici ve viral olabilecek bir video senaryosu hazırla.
-
-Şu formatı kullan:
+Yaklaşık 30 saniyelik bir video senaryosu hazırla.
 
 🔥 VİRAL KANCALAR
-
-1. İlk kanca
-2. İkinci kanca
-3. Üçüncü kanca
-
+Üç dikkat çekici giriş yaz.
 
 🎬 VİDEO SENARYOSU
-
-Akıcı ve izleyiciyi videonun sonuna kadar tutacak senaryoyu yaz.
-
+Akıcı, ilgi çekici senaryo yaz.
 
 📱 EKRAN YAZILARI
-
-Videoda gösterilecek kısa yazıları yaz.
-
+Kısa ekran yazıları ekle.
 
 🎯 ÇAĞRI
-
-İzleyiciyi harekete geçirecek kısa bir çağrı yaz.
-
-
+İzleyiciyi harekete geçiren bir kapanış yaz.
 Gereksiz açıklama yapma.
-
-Doğrudan kullanılabilecek kaliteli içerik üret.
-
 `;
 
-
     try {
-
         const response = await fetch(
-
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
-
             {
-
                 method: "POST",
-
                 headers: {
-
-                    "Content-Type":
-                        "application/json",
-
-                    "x-goog-api-key":
-                        GEMINI_API_KEY
-
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": apiKey
                 },
-
-
                 body: JSON.stringify({
-
-                    contents: [
-
-                        {
-
-                            parts: [
-
-                                {
-
-                                    text:
-                                        promptText
-
-                                }
-
-                            ]
-
-                        }
-
-                    ],
-
-
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }],
                     generationConfig: {
-
-                        maxOutputTokens:
-                            1200
-
+                        maxOutputTokens: 1200
                     }
-
                 })
-
             }
-
         );
 
-
-        const data =
-            await response.json();
-
-
-        console.log(
-            "Gemini cevabı:",
-            data
-        );
-
+        const data = await response.json();
 
         if (!response.ok) {
-
-            const errorMessage =
-                data?.error?.message ||
-                `Gemini API hatası (HTTP ${response.status})`;
-
-
-            resultBox.innerText =
-                "❌ Gemini Hatası:\n\n" +
-                errorMessage;
-
-            return;
+            throw new Error(data?.error?.message || "Gemini API hatası.");
         }
 
+        const text =
+            data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        const aiResult =
-            data?.candidates?.[0]
-                ?.content?.parts?.[0]?.text;
-
-
-        if (!aiResult) {
-
-            resultBox.innerText =
-                "❌ Gemini'dan geçerli bir cevap alınamadı.";
-
-            return;
+        if (!text) {
+            throw new Error("Senaryo cevabı alınamadı.");
         }
 
-
-        resultBox.innerText =
-            aiResult;
-
+        resultBox.innerText = text;
 
     } catch (error) {
-
-        console.error(
-            "Bağlantı hatası:",
-            error
-        );
-
-
-        resultBox.innerText =
-            "❌ Bağlantı hatası oluştu.\n\n" +
-            "İnternet bağlantınızı kontrol edip tekrar deneyin.";
-
+        resultBox.innerText = "Hata: " + error.message;
     }
-
 }
 
 
-/* -------------------------------- */
-/* API KEY HATIRLAMA                */
-/* -------------------------------- */
+/* =====================================
+   KAYITLI API ANAHTARINI YÜKLE
+===================================== */
 
-window.addEventListener(
-    'DOMContentLoaded',
-    () => {
+window.addEventListener("DOMContentLoaded", () => {
+    const savedKey = localStorage.getItem("gemini_api_key");
+    const input = document.getElementById("apiKey");
 
-        const savedKey =
-            localStorage.getItem(
-                'gemini_api_key'
-            );
-
-
-        if (savedKey) {
-
-            document.getElementById(
-                'apiKey'
-            ).value = savedKey;
-
-        }
-
+    if (savedKey && input) {
+        input.value = savedKey;
     }
-);
+});
 
 
-/* -------------------------------- */
-/* VİDEO OLUŞTURMA PLANI            */
-/* -------------------------------- */
+/* =====================================
+   GERÇEK VİDEO ÜRETİMİ VE MP4 İNDİRME
+===================================== */
 
 async function createVideoPlan() {
-
-    const apiKey =
-        document.getElementById(
-            'apiKey'
-        ).value.trim();
-
-
-    const topic =
-        document.getElementById(
-            'topic'
-        ).value.trim();
-
-
-    const language =
-        document.getElementById(
-            'language'
-        ).value;
-
-
-    const duration =
-        document.getElementById(
-            'duration'
-        ).value;
-
-
-    const platform =
-        document.getElementById(
-            'platform'
-        ).value;
-
-
-    const style =
-        document.getElementById(
-            'style'
-        ).value;
-
-
-    const status =
-        document.getElementById(
-            'videoStatus'
-        );
-
-
-    if (!apiKey) {
-
-        alert(
-            "Önce Gemini API anahtarınızı girin."
-        );
-
-        return;
-    }
-
+    const topic = document.getElementById("topic").value.trim();
+    const language = document.getElementById("language").value;
+    const duration = document.getElementById("duration").value;
+    const platform = document.getElementById("platform").value;
+    const style = document.getElementById("style").value;
+    const status = document.getElementById("videoStatus");
 
     if (!topic) {
-
-        alert(
-            "Önce video konusunu yazın."
-        );
-
+        alert("Önce video konusunu yaz.");
         return;
     }
 
-
-    status.style.display =
-        "block";
-
-
-    status.innerText =
-        "🎬 Video planı hazırlanıyor...";
-
-
-    const prompt = `
-
-Sen profesyonel bir kısa video yapımcısısın.
-
-KONU:
-${topic}
-
-SÜRE:
-${duration} saniye
-
-PLATFORM:
-${platform}
-
-TARZ:
-${style}
-
-DİL:
-${language}
-
-Bu bilgilerle bir kısa video üretim planı hazırla.
-
-Şu formatı kullan:
-
-🎬 VİDEO BAŞLIĞI
-
-🔥 VİRAL KANCA
-
-🎙️ SESLENDİRME
-
-🎥 SAHNE 1
-Görsel açıklaması:
-Ekran yazısı:
-
-🎥 SAHNE 2
-Görsel açıklaması:
-Ekran yazısı:
-
-🎥 SAHNE 3
-Görsel açıklaması:
-Ekran yazısı:
-
-🎥 SAHNE 4
-Görsel açıklaması:
-Ekran yazısı:
-
-🎯 SON ÇAĞRI
-
-Her sahneyi kısa ve görsel olarak üretilebilir şekilde tarif et.
-
-`;
-
+    status.style.display = "block";
+    status.innerText = "🎬 Video üretimi başlatılıyor...";
 
     try {
+        // API anahtarı tarayıcıdan gönderilmez.
+        // Sunucu Vercel'deki GEMINI_API_KEY değişkenini kullanır.
+        const startResponse = await fetch("/api/generate-video", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                topic: topic,
+                style: `${style}. Language: ${language}. Platform: ${platform}`,
+                duration: 8
+            })
+        });
 
-        const response =
-            await fetch(
+        const startData = await startResponse.json();
 
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+        if (!startResponse.ok || !startData.operation) {
+            throw new Error(
+                startData.error || "Video üretimi başlatılamadı."
+            );
+        }
 
-                {
+        const operation = startData.operation;
 
+        status.innerText =
+            "⏳ Video hazırlanıyor. Bu işlem birkaç dakika sürebilir.";
+
+        // Videonun hazır olup olmadığını düzenli kontrol et.
+        for (let attempt = 0; attempt < 60; attempt++) {
+            await new Promise(resolve => setTimeout(resolve, 10000));
+
+            status.innerText =
+                `⏳ Video hazırlanıyor... (${attempt + 1}. kontrol)`;
+
+            const checkResponse = await fetch("/api/video-status", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ operation })
+            });
+
+            const checkData = await checkResponse.json();
+
+            if (!checkResponse.ok) {
+                throw new Error(
+                    checkData.error || "Video durumu kontrol edilemedi."
+                );
+            }
+
+            if (checkData.error) {
+                throw new Error(checkData.error);
+            }
+
+            if (checkData.done) {
+                status.innerText = "📥 Video hazır. MP4 indiriliyor...";
+
+                const downloadResponse = await fetch("/api/download-video", {
                     method: "POST",
-
                     headers: {
-
-                        "Content-Type":
-                            "application/json",
-
-                        "x-goog-api-key":
-                            apiKey
-
+                        "Content-Type": "application/json"
                     },
+                    body: JSON.stringify({ operation })
+                });
 
+                if (!downloadResponse.ok) {
+                    let message = "Video indirilemedi.";
 
-                    body:
-                        JSON.stringify({
+                    try {
+                        const errorData = await downloadResponse.json();
+                        message = errorData.error || message;
+                    } catch (_) {}
 
-                            contents: [
-
-                                {
-
-                                    parts: [
-
-                                        {
-
-                                            text:
-                                                prompt
-
-                                        }
-
-                                    ]
-
-                                }
-
-                            ],
-
-                            generationConfig: {
-
-                                maxOutputTokens:
-                                    1600
-
-                            }
-
-                        })
-
+                    throw new Error(message);
                 }
 
-            );
+                const videoBlob = await downloadResponse.blob();
 
+                if (!videoBlob.size) {
+                    throw new Error("İndirilen video dosyası boş.");
+                }
 
-        const data =
-            await response.json();
+                const videoUrl = URL.createObjectURL(videoBlob);
+                const link = document.createElement("a");
 
+                link.href = videoUrl;
+                link.download = "yapay-zeka-videosu.mp4";
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
 
-        if (!response.ok) {
+                setTimeout(() => URL.revokeObjectURL(videoUrl), 60000);
 
-            status.innerText =
-                "❌ Gemini Hatası:\n\n" +
-                (
-                    data?.error?.message ||
-                    "Bilinmeyen hata"
-                );
+                status.innerText =
+                    "✅ Video hazır! MP4 indirme işlemi başlatıldı.";
 
-            return;
+                return;
+            }
         }
-
-
-        const result =
-            data?.candidates?.[0]
-                ?.content?.parts?.[0]?.text;
-
-
-        if (!result) {
-
-            status.innerText =
-                "❌ Video planı oluşturulamadı.";
-
-            return;
-        }
-
 
         status.innerText =
-            "✅ Video planı hazır!\n\n" +
-            result;
-
+            "⏳ Video henüz tamamlanmadı. Daha sonra tekrar kontrol et.";
 
     } catch (error) {
-
-        console.error(error);
-
-
-        status.innerText =
-            "❌ Bağlantı hatası oluştu.";
-
+        console.error("Video üretim hatası:", error);
+        status.innerText = "❌ " + error.message;
     }
-
 }
