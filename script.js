@@ -147,15 +147,22 @@ async function createVideoPlan() {
       ? resultBox.innerText.trim()
       : "";
 
-    const sentences = scriptText.startsWith("Hata:")
-      ? []
-      : scriptText
-          .split(/[.!?\n]+/)
-          .map(item => item.trim())
-          .filter(item =>
-            item.length > 10 &&
-            item !== "Senaryo hazırlanıyor..."
-          );
+    
+const cleanText = scriptText
+  .replace(/\*\*/g, "")
+  .replace(/^#+\s*/gm, "")
+  .replace(/^(Görsel|Sahne|Kamera|Müzik|Ses efekti)\s*:/gim, "")
+  .replace(/^(VİDEO SENARYOSU|EKRAN YAZILARI|VİRAL KANCALAR|ÇAĞRI)\s*:?\s*$/gim, "")
+  .replace(/^\s*[-•]\s*/gm, "")
+  .replace(/\n{2,}/g, "\n");
+
+const sentences = cleanText.startsWith("Hata:")
+  ? []
+  : cleanText
+      .split(/[.!?\n]+/)
+      .map(item => item.trim())
+      .filter(item => item.length > 10);
+     
 
     const slides = [topic, ...sentences.slice(0, 6)];
 
