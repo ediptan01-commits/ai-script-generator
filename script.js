@@ -150,7 +150,8 @@ async function createVideoPlan() {
 const cleanText = scriptText
   .replace(/\*\*/g, "")
   .replace(/^\s*[*#•-]+\s*/gm, "")
-  .replace(/^(Görsel|Sahne|Kamera|Dış Ses|Seslendirme|Müzik|Ses efekti)\s*:\s*/gim, "")
+  .replace(/^(Görsel|Sahne|Kamera|Dış Ses|Seslendirme|Müzik|Ses efekti)\s*:\s*/gim, "")  
+  .replace(/\(\s*(Görsel|Sahne|Kamera|Dış Ses|Seslendirme|Müzik|Ses efekti)\s*:[^)]*\)/gim, "")
   .replace(/^(VİDEO SENARYOSU|EKRAN YAZILARI|VİRAL KANCALAR|ÇAĞRI)\s*:?\s*$/gim, "")
   .replace(/\[[^\]]*\]/g, "")
   .replace(/\n{2,}/g, "\n")
