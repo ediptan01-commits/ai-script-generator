@@ -55,7 +55,7 @@ async function createVideoPlan() {
   if (button) button.disabled = true;
 
   try {
-    const response = await fetch("/api/video", {
+    const response = await fetch("/api/video-status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
