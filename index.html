@@ -132,15 +132,9 @@
         TikTok, Reels ve Shorts için yapay zekâ ile içerik oluşturun.
     </p>
 
-    <label for="apiKey">Gemini API Anahtarınız:</label>
+    <p class="subtitle">Senaryo üretmek için konu yazın. OpenAI güvenli sunucu bağlantısı kullanılır.</p>
 
-    <input
-        type="password"
-        id="apiKey"
-        placeholder="Gemini API anahtarınızı buraya yapıştırın"
-    >
-
-    <label for="topic">Videonuzun Konusu Nedir?</label>
+<label for="topic">Videonuzun Konusu Nedir?</label>
 
     <input
         type="text"
@@ -166,14 +160,16 @@
 
     <div class="video-panel">
 
-        <h2>🎬 Video Oluştur</h2>
+        <h2>🎬 Yapay Zekâ ile Gerçek Video</h2>
+
+        <p class="subtitle">Senaryonuz OpenAI Sora 2 ile dikey MP4 videoya dönüştürülür. Üretim birkaç dakika sürebilir ve OpenAI API kullanım ücreti oluşur.</p>
 
         <label for="duration">Video Süresi</label>
 
         <select id="duration">
-            <option value="15">15 saniye</option>
-            <option value="30" selected>30 saniye</option>
-            <option value="60">60 saniye</option>
+            <option value="8" selected>8 saniye</option>
+            <option value="16">16 saniye</option>
+            <option value="20">20 saniye</option>
         </select>
 
 
@@ -201,7 +197,7 @@
             class="video-button"
             onclick="createVideoPlan()"
         >
-            🎬 Videoyu Oluştur
+            🎬 Gerçek Videoyu Üret
         </button>
 
         <div id="videoStatus" class="status"></div>
