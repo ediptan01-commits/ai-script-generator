@@ -17,7 +17,7 @@ async function generateScript() {
   resultBox.innerText = "Senaryo hazırlanıyor...";
   if (button) button.disabled = true;
   try {
-    const response = await fetch("/api/generate", {
+    const response = await fetch("/api/generate-video", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic, language })
@@ -74,7 +74,7 @@ async function createVideoPlan() {
     while (true) {
       status.innerText = "Gerçek video hazırlanıyor. Bu işlem birkaç dakika sürebilir...";
       await new Promise(resolve => setTimeout(resolve, delay));
-      const check = await fetch(`/api/video?id=${encodeURIComponent(videoId)}`);
+      const check = await fetch(`/api/video-status?id=${encodeURIComponent(videoId)}`);
       const state = await check.json().catch(() => ({}));
       if (!check.ok) throw new Error(state.error || "Video durumu alınamadı.");
       if (state.status === "completed") break;
@@ -86,7 +86,7 @@ async function createVideoPlan() {
     }
 
     status.innerText = "Video tamamlandı. MP4 indiriliyor...";
-    const download = await fetch(`/api/video?id=${encodeURIComponent(videoId)}&download=1`);
+    const download = await fetch(`/api/video-status?id=${encodeURIComponent(videoId)}&download=1`);
     if (!download.ok) throw new Error("Video hazır ancak MP4 indirilemedi.");
     const blob = await download.blob();
     const url = URL.createObjectURL(blob);
