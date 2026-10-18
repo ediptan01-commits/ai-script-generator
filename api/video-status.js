@@ -34,7 +34,9 @@ module.exports = async function handler(req, res) {
         headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
         body: JSON.stringify({
           instances: [{ prompt }],
-          parameters: { aspectRatio: "9:16", resolution: "720p", numberOfVideos: 1 }
+          // Veo returns one video per request; numberOfVideos is not accepted
+          // for this text-to-video request.
+          parameters: { aspectRatio: "9:16", resolution: "720p" }
         })
       });
       const data = await upstream.json().catch(() => ({}));
