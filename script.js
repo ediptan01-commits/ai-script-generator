@@ -51,10 +51,11 @@ async function createVideoPlan() {
   }
 
   status.style.display = "block";
-  status.innerText = "Gemini Veo gerçek video üretimini başlatıyor...";
+  status.innerText = "Gemini Veo video üretimini başlatıyor...";
   if (button) button.disabled = true;
 
   try {
+    const targetSeconds = Number(document.getElementById("duration").value || 29);
     const response = await fetch("/api/video-status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -63,29 +64,52 @@ async function createVideoPlan() {
         script: scriptText,
         style: document.getElementById("style").value,
         platform: document.getElementById("platform").value,
+        seconds: targetSeconds
       })
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || `Video başlatılamadı (HTTP ${response.status}).`);
 
     const videoId = data.id;
+    let currentVideoId = videoId;
+    let step = Number(data.step || 0);
+    const extensionCount = Math.max(0, Math.round((targetSeconds - 8) / 7));
     let delay = 10000;
     while (true) {
-      status.innerText = "Gerçek video hazırlanıyor. Bu işlem birkaç dakika sürebilir...";
+      status.innerText = extensionCount
+        ? `Gerçek video hazırlanıyor. İlk video ve ${extensionCount} otomatik uzatma çalışıyor; bu işlem birkaç dakika sürebilir...`
+        : "Gerçek video hazırlanıyor. Bu işlem birkaç dakika sürebilir...";
       await new Promise(resolve => setTimeout(resolve, delay));
-      const check = await fetch(`/api/video-status?id=${encodeURIComponent(videoId)}`);
+      const check = await fetch("/api/video-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "status",
+          id: currentVideoId,
+          step,
+          seconds: targetSeconds,
+          topic,
+          script: scriptText,
+          style: document.getElementById("style").value,
+          platform: document.getElementById("platform").value
+        })
+      });
       const state = await check.json().catch(() => ({}));
       if (!check.ok) throw new Error(state.error || "Video durumu alınamadı.");
+      if (state.id) currentVideoId = state.id;
+      if (Number.isFinite(Number(state.step))) step = Number(state.step);
       if (state.status === "completed") break;
       if (state.status === "failed" || state.status === "expired") {
         throw new Error(state.error || "Gemini video üretimini tamamlayamadı.");
       }
-      status.innerText = `Gerçek video hazırlanıyor: %${state.progress || 0}. Lütfen bekleyin.`;
+      status.innerText = extensionCount
+        ? `Gerçek video hazırlanıyor: %${state.progress || 0}. Otomatik uzatma ${Math.min(step, extensionCount)}/${extensionCount}. Lütfen bekleyin.`
+        : `Gerçek video hazırlanıyor: %${state.progress || 0}. Lütfen bekleyin.`;
       delay = Math.min(Math.round(delay * 1.25), 20000);
     }
 
     status.innerText = "Video tamamlandı. MP4 indiriliyor...";
-    const download = await fetch(`/api/video-status?id=${encodeURIComponent(videoId)}&download=1`);
+    const download = await fetch(`/api/video-status?id=${encodeURIComponent(currentVideoId)}&seconds=${targetSeconds}&step=${extensionCount}&download=1`);
     if (!download.ok) throw new Error("Video hazır ancak MP4 indirilemedi.");
     const blob = await download.blob();
     const url = URL.createObjectURL(blob);
