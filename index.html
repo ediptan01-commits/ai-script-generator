@@ -134,7 +134,7 @@
 
     <p class="subtitle">Senaryo ve gerçek video Gemini API ile hazırlanır; API anahtarınız güvenli sunucuda kalır.</p>
 
-    <label for="topic">Videonuzun Konusu Nedir?</label>
+<label for="topic">Videonuzun Konusu Nedir?</label>
 
     <input
         type="text"
@@ -155,11 +155,14 @@
         🧠 Senaryo Üret
     </button>
 
+
+    <!-- VİDEO AYARLARI -->
+
     <div class="video-panel">
 
         <h2>🎬 Yapay Zekâ ile Gerçek Video</h2>
 
-        <p class="subtitle">Gemini Veo önce 8 saniyelik video üretir, ardından seçtiğiniz süreye ulaşana kadar videoyu otomatik uzatır. Her uzatma ek API kullanımı ve ücret oluşturabilir.</p>
+        <p class="subtitle">Veo 3.1 Fast önce 8 saniyelik video üretir, ardından seçtiğiniz süreye ulaşana kadar 7 saniyelik parçalarla otomatik uzatır. Her uzatma ek API kullanımı ve ücret oluşturabilir.</p>
 
         <label for="duration">Video Süresi</label>
 
@@ -167,8 +170,9 @@
             <option value="8">8 saniye</option>
             <option value="15">15 saniye</option>
             <option value="22">22 saniye</option>
-            <option value="29" selected>29 saniye (önerilen)</option>
+            <option value="29" selected>29 saniye</option>
         </select>
+
 
         <label for="platform">Platform</label>
 
@@ -177,6 +181,7 @@
             <option value="Instagram Reels">Instagram Reels</option>
             <option value="YouTube Shorts">YouTube Shorts</option>
         </select>
+
 
         <label for="style">Video Tarzı</label>
 
@@ -187,6 +192,7 @@
             <option value="Hikaye">Hikâye anlatımı</option>
             <option value="Reklam">Reklam</option>
         </select>
+
 
         <button
             class="video-button"
@@ -199,9 +205,11 @@
 
     </div>
 
+
     <div id="result" class="result-box"></div>
 
 </div>
+
 
 <script src="script.js"></script>
 
