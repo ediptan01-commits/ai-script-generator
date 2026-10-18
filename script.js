@@ -51,11 +51,11 @@ async function createVideoPlan() {
   }
 
   status.style.display = "block";
-  status.innerText = "Gemini Veo video üretimini başlatıyor...";
+  status.innerText = "Veo 3.1 Fast video üretimini başlatıyor...";
   if (button) button.disabled = true;
 
   try {
-    const targetSeconds = Number(document.getElementById("duration").value || 29);
+    const targetSeconds = Number(document.getElementById("duration").value || 8);
     const response = await fetch("/api/video-status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,8 +77,8 @@ async function createVideoPlan() {
     let delay = 10000;
     while (true) {
       status.innerText = extensionCount
-        ? `Gerçek video hazırlanıyor. İlk video ve ${extensionCount} otomatik uzatma çalışıyor; bu işlem birkaç dakika sürebilir...`
-        : "Gerçek video hazırlanıyor. Bu işlem birkaç dakika sürebilir...";
+        ? `Veo 3.1 Fast video hazırlıyor. ${extensionCount} otomatik uzatma uygulanacak; birkaç dakika sürebilir...`
+        : "Veo 3.1 Fast ile gerçek video hazırlanıyor. Bu işlem birkaç dakika sürebilir...";
       await new Promise(resolve => setTimeout(resolve, delay));
       const check = await fetch("/api/video-status", {
         method: "POST",
@@ -103,7 +103,7 @@ async function createVideoPlan() {
         throw new Error(state.error || "Gemini video üretimini tamamlayamadı.");
       }
       status.innerText = extensionCount
-        ? `Gerçek video hazırlanıyor: %${state.progress || 0}. Otomatik uzatma ${Math.min(step, extensionCount)}/${extensionCount}. Lütfen bekleyin.`
+        ? `Gerçek video hazırlanıyor: %${state.progress || 0}. Uzatma ${Math.min(step, extensionCount)}/${extensionCount}. Lütfen bekleyin.`
         : `Gerçek video hazırlanıyor: %${state.progress || 0}. Lütfen bekleyin.`;
       delay = Math.min(Math.round(delay * 1.25), 20000);
     }
