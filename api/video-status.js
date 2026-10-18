@@ -1,4 +1,4 @@
-// Gemini Veo generation and automatic video-extension flow.
+// Gemini Veo 3.1 Fast generation with automatic 7-second video extensions.
 // The API key stays on the Vercel server.
 const GOOGLE_API = "https://generativelanguage.googleapis.com/v1beta";
 const ALLOWED_DURATIONS = new Set([8, 15, 22, 29]);
@@ -25,7 +25,7 @@ async function startExtension(apiKey, sourceOperation, topic, script, style, pla
     `Continue and resolve the story using this scenario as guidance: ${script}`
   ].join("\n").slice(0, 4000);
 
-  const upstream = await fetch(`${GOOGLE_API}/models/veo-3.1-generate-preview:predictLongRunning`, {
+  const upstream = await fetch(`${GOOGLE_API}/models/veo-3.1-fast-generate-preview:predictLongRunning`, {
     method: "POST",
     headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -76,12 +76,12 @@ module.exports = async function handler(req, res) {
     ].join("\n").slice(0, 4000);
 
     try {
-      const upstream = await fetch(`${GOOGLE_API}/models/veo-3.1-generate-preview:predictLongRunning`, {
+      const upstream = await fetch(`${GOOGLE_API}/models/veo-3.1-fast-generate-preview:predictLongRunning`, {
         method: "POST",
         headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
         body: JSON.stringify({
           instances: [{ prompt }],
-          parameters: { aspectRatio: "9:16", resolution: "720p" }
+          parameters: { aspectRatio: "9:16", resolution: "720p", durationSeconds: "8" }
         })
       });
       const data = await upstream.json().catch(() => ({}));
@@ -115,7 +115,7 @@ module.exports = async function handler(req, res) {
   if (!ALLOWED_DURATIONS.has(targetSeconds) || !Number.isInteger(step) || step < 0) {
     return res.status(400).json({ error: "Video uzatma isteği geçersiz." });
   }
-  const extensionCount = Math.round((targetSeconds - 8) / 7);
+  const extensionCount = Math.max(0, Math.round((targetSeconds - 8) / 7));
   if (step > extensionCount) return res.status(400).json({ error: "Video uzatma aşaması geçersiz." });
 
   try {
