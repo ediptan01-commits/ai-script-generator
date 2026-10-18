@@ -1,6 +1,6 @@
 
 /* ==========================================
-   OPENAI İLE GÜVENLİ SENARYO ÜRETİMİ
+   GEMINI İLE GÜVENLİ SENARYO ÜRETİMİ
 ========================================== */
 
 async function generateScript() {
@@ -36,7 +36,7 @@ async function generateScript() {
 
 
 /* ==========================================
-   GERÇEK YAPAY ZEKÂ VİDEOSU (SORA 2)
+   GERÇEK YAPAY ZEKÂ VİDEOSU (GEMINI VEO)
 ========================================== */
 
 async function createVideoPlan() {
@@ -51,7 +51,7 @@ async function createVideoPlan() {
   }
 
   status.style.display = "block";
-  status.innerText = "OpenAI gerçek video üretimini başlatıyor...";
+  status.innerText = "Gemini Veo gerçek video üretimini başlatıyor...";
   if (button) button.disabled = true;
 
   try {
@@ -63,11 +63,10 @@ async function createVideoPlan() {
         script: scriptText,
         style: document.getElementById("style").value,
         platform: document.getElementById("platform").value,
-        seconds: document.getElementById("duration").value
       })
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "Video başlatılamadı.");
+    if (!response.ok) throw new Error(data.error || `Video başlatılamadı (HTTP ${response.status}).`);
 
     const videoId = data.id;
     let delay = 10000;
@@ -79,7 +78,7 @@ async function createVideoPlan() {
       if (!check.ok) throw new Error(state.error || "Video durumu alınamadı.");
       if (state.status === "completed") break;
       if (state.status === "failed" || state.status === "expired") {
-        throw new Error(state.error || "OpenAI video üretimini tamamlayamadı.");
+        throw new Error(state.error || "Gemini video üretimini tamamlayamadı.");
       }
       status.innerText = `Gerçek video hazırlanıyor: %${state.progress || 0}. Lütfen bekleyin.`;
       delay = Math.min(Math.round(delay * 1.25), 20000);
@@ -92,7 +91,7 @@ async function createVideoPlan() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "openai-yapay-zeka-videosu.mp4";
+    link.download = "gemini-yapay-zeka-videosu.mp4";
     document.body.appendChild(link);
     link.click();
     link.remove();
